@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交通工程检测费用计算系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: '微软雅黑', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00bcd4;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto;
+            padding: 15px;
+            background: #00bcd4;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #0097a7;
+            transform: translateY(-2px);
+        }
+
+        #result {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 20px;
+            background: rgba(0, 188, 212, 0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>交通工程检测费用计算系统</h1>
+        
+        <div class="input-group">
+            <div class="input-box">
+                <label>线路总长度（公里）</label>
+                <input type="number" id="routeLength" step="0.1">
+            </div>
+            <div class="input-box">
+                <label>路基长度（公里）</label>
+                <input type="number" id="subgradeLength" step="0.1">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-box">
+                <label>桥梁长度（公里）</label>
+                <input type="number" id="bridgeLength" step="0.1">
+            </div>
+            <div class="input-box">
+                <label>隧道长度（公里）</label>
+                <input type="number" id="tunnelLength" step="0.1">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-box">
+                <label>斜拉桥/悬索桥数量（座）</label>
+                <input type="number" id="cableBridge">
+            </div>
+            <div class="input-box">
+                <label>拱桥数量（座）</label>
+                <input type="number" id="archBridge">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-box">
+                <label>收费站数量（座）</label>
+                <input type="number" id="tollStation">
+            </div>
+            <div class="input-box">
+                <label>互通数量（座）</label>
+                <input type="number" id="interchange">
+            </div>
+        </div>
+
+        <button onclick="calculate()">立即计算</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            // 单价设置
+            const prices = {
+                subgrade: 15088,      // 元/公里
+                bridge: 54576,        // 元/公里
+                tunnel: 107240,       // 元/公里
+                cableBridge: 1000000,  // 元/座
+                archBridge: 500000,    // 元/座
+                tollStation: 2776,     // 元/座
+                interchange: 42376    // 元/座
+            };
+
+            // 获取输入值
+            const inputs = {
+                subgrade: parseFloat(document.getElementById('subgradeLength').value) || 0,
+                bridge: parseFloat(document.getElementById('bridgeLength').value) || 0,
+                tunnel: parseFloat(document.getElementById('tunnelLength').value) || 0,
+                cableBridge: parseInt(document.getElementById('cableBridge').value) || 0,
+                archBridge: parseInt(document.getElementById('archBridge').value) || 0,
+                tollStation: parseInt(document.getElementById('tollStation').value) || 0,
+                interchange: parseInt(document.getElementById('interchange').value) || 0
+            };
+
+            // 计算各项费用
+            const total = 
+                inputs.subgrade * prices.subgrade +
+                inputs.bridge * prices.bridge +
+                inputs.tunnel * prices.tunnel +
+                inputs.cableBridge * prices.cableBridge +
+                inputs.archBridge * prices.archBridge +
+                inputs.tollStation * prices.tollStation +
+                inputs.interchange * prices.interchange;
+
+            // 显示结果
+            document.getElementById('result').innerHTML = 
+                `总检测费用：¥${total.toLocaleString('zh-CN', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                })}`;
+        }
+    </script>
+</body>
+</html>
